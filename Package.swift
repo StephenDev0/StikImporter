@@ -1,24 +1,32 @@
-// swift-tools-version: 6.0
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
+// swift-tools-version:5.7
 import PackageDescription
 
 let package = Package(
     name: "StikImporter",
+    platforms: [
+        .iOS(.v14),       // Supports iOS 14 and above
+        .macOS(.v11),     // Supports macOS 11 and above
+        .tvOS(.v14),      // Optional: Supports tvOS 14 and above
+        .watchOS(.v7)     // Optional: Supports watchOS 7 and above
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "StikImporter",
-            targets: ["StikImporter"]),
+            targets: ["StikImporter"]
+        ),
+    ],
+    dependencies: [
+        // No external dependencies
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "StikImporter"),
+            name: "StikImporter",
+            dependencies: []
+        ),
         .testTarget(
             name: "StikImporterTests",
             dependencies: ["StikImporter"]
         ),
     ]
 )
+
