@@ -22,7 +22,7 @@ To add **StikImporter** to your project:
 2. Enter the repository URL:
 
    ```
-   https://github.com/yourusername/StikImporter.git
+   https://github.com/0-Blu/StikImporter.git
    ```
 
 3. Follow the prompts to add the package.
