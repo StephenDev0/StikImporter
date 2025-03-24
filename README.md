@@ -118,6 +118,8 @@ You can restrict file types using **`allowedContentTypes`**. Here are some examp
 - **PDF Files**: `.pdf`
 - **Text Files**: `.plainText`
 - **All Items**: `.item`
+- **Plist Files** `.plist`
+- **Pairing Files** `.moobiledevicepairing`
 
 Example:
 
