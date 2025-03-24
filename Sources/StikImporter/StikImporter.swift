@@ -5,16 +5,14 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 // Extend UTType to support .plist and .mobiledevicepairing file types.
-extension UTType {
+public extension UTType {
     /// Represents a property list file (.plist).
     static var plist: UTType {
-        // Create a UTType for .plist files; fall back to .data if necessary.
         UTType(filenameExtension: "plist", conformingTo: .data) ?? .data
     }
     
     /// Represents a mobile device pairing file (.mobiledevicepairing).
     static var mobileDevicePairing: UTType {
-        // Create a UTType for .mobiledevicepairing files; fall back to .data if necessary.
         UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data) ?? .data
     }
 }
@@ -43,7 +41,7 @@ public struct StikImporter: View {
     public init(
         isPresented: Binding<Bool>,
         selectedURLs: Binding<[URL]>,
-        // Add .plist and .mobileDevicePairing to the default allowed types.
+        // Now referencing public UTType properties.
         allowedContentTypes: [UTType] = [.item, .plist, .mobileDevicePairing],
         allowsMultipleSelection: Bool = false,
         onImport: (([URL]) -> Void)? = nil
