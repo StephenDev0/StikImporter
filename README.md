@@ -119,7 +119,7 @@ You can restrict file types using **`allowedContentTypes`**. Here are some examp
 - **Text Files**: `.plainText`
 - **All Items**: `.item`
 - **Plist Files** `.plist`
-- **Pairing Files** `.moobiledevicepairing`
+- **Pairing Files** `.mobiledevicepairing`
 
 Example:
 
