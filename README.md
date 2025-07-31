@@ -123,6 +123,7 @@ You can restrict file types using **`allowedContentTypes`**. Here are some examp
 - **MobileProvision Files** `.mobileProvision`
 - **P12 Files** `.p12`
 - **IPA Files** `.ipa`
+  
 Example:
 
 ```swift
