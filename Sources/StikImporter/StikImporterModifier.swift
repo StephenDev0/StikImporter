@@ -8,29 +8,34 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// A ViewModifier that attaches a StikImporter to a view.
 public struct StikImporterModifier: ViewModifier {
     @Binding var isPresented: Bool
     @Binding var selectedURLs: [URL]
-    
-    public var allowedContentTypes: [UTType]
-    public var allowsMultipleSelection: Bool
-    public var onImport: (([URL]) -> Void)?
-    
+    let allowedContentTypes: [UTType]
+    let allowsMultipleSelection: Bool
+    let onImport: ([URL]) -> Void
+
     public init(
         isPresented: Binding<Bool>,
         selectedURLs: Binding<[URL]>,
-        allowedContentTypes: [UTType] = [.item],
+        allowedContentTypes: [UTType] = [
+            .item,
+            .plist,
+            .mobileDevicePairing,
+            .p12,
+            .mobileProvision,
+            .ipa
+        ],
         allowsMultipleSelection: Bool = false,
-        onImport: (([URL]) -> Void)? = nil
+        onImport: @escaping ([URL]) -> Void = { _ in }
     ) {
-        self._isPresented = isPresented
-        self._selectedURLs = selectedURLs
+        _isPresented = isPresented
+        _selectedURLs = selectedURLs
         self.allowedContentTypes = allowedContentTypes
         self.allowsMultipleSelection = allowsMultipleSelection
         self.onImport = onImport
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .background(
@@ -45,23 +50,22 @@ public struct StikImporterModifier: ViewModifier {
     }
 }
 
-extension View {
-    /// Attaches a StikImporter to the view.
-    /// - Parameters:
-    ///   - isPresented: Binding to control the presentation.
-    ///   - selectedURLs: Binding to receive the selected URLs.
-    ///   - allowedContentTypes: The allowed content types.
-    ///   - allowsMultipleSelection: Whether multiple selection is allowed.
-    ///   - onImport: Optional callback with selected URLs.
-    /// - Returns: A view with the StikImporter attached.
-    public func stikImporter(
+public extension View {
+    func stikImporter(
         isPresented: Binding<Bool>,
         selectedURLs: Binding<[URL]>,
-        allowedContentTypes: [UTType] = [.item],
+        allowedContentTypes: [UTType] = [
+            .item,
+            .plist,
+            .mobileDevicePairing,
+            .p12,
+            .mobileProvision,
+            .ipa
+        ],
         allowsMultipleSelection: Bool = false,
-        onImport: (([URL]) -> Void)? = nil
+        onImport: @escaping ([URL]) -> Void = { _ in }
     ) -> some View {
-        self.modifier(
+        modifier(
             StikImporterModifier(
                 isPresented: isPresented,
                 selectedURLs: selectedURLs,
