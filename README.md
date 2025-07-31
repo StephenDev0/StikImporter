@@ -120,7 +120,9 @@ You can restrict file types using **`allowedContentTypes`**. Here are some examp
 - **All Items**: `.item`
 - **Plist Files** `.plist`
 - **Pairing Files** `.mobiledevicepairing`
-
+- **MobileProvision Files** `.mobileProvision`
+- **P12 Files** `.p12`
+- **IPA Files** `.ipa`
 Example:
 
 ```swift
