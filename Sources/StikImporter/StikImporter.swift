@@ -1,50 +1,39 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
-
 import SwiftUI
 import UniformTypeIdentifiers
 
-// Extend UTType to support .plist and .mobiledevicepairing file types.
 public extension UTType {
-    /// Represents a property list file (.plist).
-    static var plist: UTType {
-        UTType(filenameExtension: "plist", conformingTo: .data) ?? .data
-    }
-    
-    /// Represents a mobile device pairing file (.mobiledevicepairing).
-    static var mobileDevicePairing: UTType {
-        UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data) ?? .data
-    }
+    static let plist                = UTType(filenameExtension: "plist", conformingTo: .data)             ?? .data
+    static let mobileDevicePairing  = UTType(filenameExtension: "mobiledevicepairing", conformingTo: .data) ?? .data
+    static let p12                  = UTType(filenameExtension: "p12", conformingTo: .data)               ?? .data
+    static let mobileProvision      = UTType(filenameExtension: "mobileprovision", conformingTo: .data)   ?? .data
+    static let ipa: UTType          = UTType(filenameExtension: "ipa", conformingTo: .zip)               ??
+                                       UTType(filenameExtension: "ipa", conformingTo: .data)             ??
+                                       .data
 }
 
-/// A SwiftUI view that presents a file importer sheet with security-scoped resource access.
 public struct StikImporter: View {
     @Binding public var isPresented: Bool
     @Binding public var selectedURLs: [URL]
     
-    /// The allowed content types for the importer.
-    public var allowedContentTypes: [UTType]
+    public let allowedContentTypes: [UTType]
+    public let allowsMultipleSelection: Bool
+    public let onImport: ([URL]) -> Void
     
-    /// Whether multiple selection is allowed.
-    public var allowsMultipleSelection: Bool
-    
-    /// Callback with the selected URLs after accessing security-scoped resources.
-    public var onImport: (([URL]) -> Void)?
-    
-    /// Initializes a new StikImporter.
-    /// - Parameters:
-    ///   - isPresented: Binding to control the presentation.
-    ///   - selectedURLs: Binding to receive the selected URLs.
-    ///   - allowedContentTypes: The allowed content types.
-    ///   - allowsMultipleSelection: Whether multiple selection is allowed.
-    ///   - onImport: Optional callback with selected URLs.
     public init(
         isPresented: Binding<Bool>,
         selectedURLs: Binding<[URL]>,
-        // Now referencing public UTType properties.
-        allowedContentTypes: [UTType] = [.item, .plist, .mobileDevicePairing],
+        allowedContentTypes: [UTType] = [
+            .item,
+            .plist,
+            .mobileDevicePairing,
+            .p12,
+            .mobileProvision,
+            .ipa
+        ],
         allowsMultipleSelection: Bool = false,
-        onImport: (([URL]) -> Void)? = nil
+        onImport: @escaping ([URL]) -> Void = { _ in }
     ) {
         self._isPresented = isPresented
         self._selectedURLs = selectedURLs
@@ -54,40 +43,32 @@ public struct StikImporter: View {
     }
     
     public var body: some View {
-        EmptyView()
+        Color.clear
             .fileImporter(
                 isPresented: $isPresented,
                 allowedContentTypes: allowedContentTypes,
-                allowsMultipleSelection: allowsMultipleSelection
-            ) { result in
-                self.isPresented = false
-                switch result {
-                case .success(let urls):
-                    accessSecurityScopedResources(for: urls)
-                    self.onImport?(urls)
-                case .failure(let error):
-                    print("StikImporter Error: \(error.localizedDescription)")
-                }
-            }
+                allowsMultipleSelection: allowsMultipleSelection,
+                onCompletion: handleImport
+            )
     }
     
-    /// Accesses security-scoped resources for the given URLs.
-    /// - Parameter urls: The list of selected file URLs.
-    private func accessSecurityScopedResources(for urls: [URL]) {
-        var accessedURLs: [URL] = []
-        for url in urls {
-            if url.startAccessingSecurityScopedResource() {
-                accessedURLs.append(url)
-            } else {
-                print("Failed to start accessing security-scoped resource: \(url)")
+    private func handleImport(_ result: Result<[URL], Error>) {
+        isPresented = false
+        
+        guard case let .success(urls) = result else {
+            if case let .failure(error) = result {
+                print("StikImporter Error:", error.localizedDescription)
             }
+            return
         }
         
-        // Clean up security-scoped resource access after use.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            for accessedURL in accessedURLs {
-                accessedURL.stopAccessingSecurityScopedResource()
-            }
+        let accessible = urls.filter { url in
+            url.startAccessingSecurityScopedResource()
         }
+        
+        selectedURLs = accessible
+        onImport(accessible)
+        
+        accessible.forEach { $0.stopAccessingSecurityScopedResource() }
     }
 }
