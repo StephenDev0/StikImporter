@@ -149,4 +149,4 @@ Contributions are welcome! Feel free to:
 
 ## Author
 
-Developed by **[0-Blu](https://github.com/0-Blu)**.
+Developed by **[Stephen](https://github.com/stephendev0)**.
